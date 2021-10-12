@@ -6,6 +6,7 @@ param appNamePrefix string = uniqueString(resourceGroup().id)
 
 var functionAppName = '${appNamePrefix}-functionapp'
 var appServiceName = '${appNamePrefix}-appservice'
+var logicName = '${appNamePrefix}-logicapp'
 // var appInsightsName = '${appNamePrefix}-appinsights'
 
 // remove dashes for storage account name
@@ -253,4 +254,27 @@ resource functionAppBinding 'Microsoft.Web/sites/hostNameBindings@2020-06-01' = 
     siteName: functionApp.name
     hostNameType: 'Verified'
   }
+}
+
+resource logic_app_example 'Microsoft.Logic/workflows@2019-05-01' = {
+  name: logicName
+  location: resourceGroup().location
+  properties: {
+    definition: {
+      '$schema': 'https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#'
+      actions: {}
+      contentVersion: '1.0.0.0'
+      outputs: {}
+      parameters: {}
+      triggers: {
+        'manual': {
+          inputs: {}
+          kind: 'Http'
+          type: 'Request'
+        }
+      }
+    }
+    parameters: {}
+  }
+  tags: appTags
 }
