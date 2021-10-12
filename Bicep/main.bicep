@@ -2,11 +2,11 @@ param location string = resourceGroup().location
 param functionRuntime string = 'node'
 
 param appNamePrefix string = uniqueString(resourceGroup().id)
-param workspaceResourceId string
+// param workspaceResourceId string
 
 var functionAppName = '${appNamePrefix}-functionapp'
 var appServiceName = '${appNamePrefix}-appservice'
-var appInsightsName = '${appNamePrefix}-appinsights'
+// var appInsightsName = '${appNamePrefix}-appinsights'
 
 // remove dashes for storage account name
 var storageAccountName = format('{0}sta', replace(appNamePrefix, '-', ''))
@@ -61,19 +61,19 @@ resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2019-06-01
   }
 }
 
-// App Insights resource
-resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' = {
-  name: appInsightsName
-  location: location
-  kind: 'web'
-  properties: {
-    Application_Type: 'web'
-    WorkspaceResourceId: workspaceResourceId
-    publicNetworkAccessForIngestion: 'Enabled'
-    publicNetworkAccessForQuery: 'Enabled'
-  }
-  tags: appTags
-}
+// // App Insights resource
+// resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' = {
+//   name: appInsightsName
+//   location: location
+//   kind: 'web'
+//   properties: {
+//     Application_Type: 'web'
+//     WorkspaceResourceId: workspaceResourceId
+//     publicNetworkAccessForIngestion: 'Enabled'
+//     publicNetworkAccessForQuery: 'Enabled'
+//   }
+//   tags: appTags
+// }
 
 // App Service
 resource appService 'Microsoft.Web/serverFarms@2020-06-01' = {
@@ -133,14 +133,14 @@ resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
           name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
           value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
         }
-        {
-          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: appInsights.properties.InstrumentationKey
-        }
-        {
-          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-          value: 'InstrumentationKey=${appInsights.properties.InstrumentationKey}'
-        }
+        // {
+        //   name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+        //   value: appInsights.properties.InstrumentationKey
+        // }
+        // {
+        //   name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+        //   value: 'InstrumentationKey=${appInsights.properties.InstrumentationKey}'
+        // }
         {
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: functionRuntime
