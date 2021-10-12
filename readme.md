@@ -1,1 +1,1 @@
-# OpenHachServerless
+# OpenHack - Serverless
