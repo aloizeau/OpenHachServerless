@@ -1,0 +1,29 @@
+{
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "get",
+        "post"
+      ]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "name": "inputDocument",
+      "type": "cosmosDB",
+      "direction": "in",
+      "databaseName": "TestRatings",
+      "collectionName": "Ratings",
+      "sqlQuery": "SELECT * from c where c.id = {id}",
+      "connectionStringSetting": "ohratingteam3-func"
+    }
+  ],
+  "scriptFile": "../dist/GetRating/index.js"
+}
