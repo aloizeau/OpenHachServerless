@@ -18,10 +18,10 @@
     {
       "name": "outputDocument",
       "type": "cosmosDB",
-      "databaseName": "TestRatings",
-      "collectionName": "Ratings",
+      "databaseName": "ratings",
+      "collectionName": "ratings",
       "createIfNotExists": true,
-      "connectionStringSetting": "%COSMOSDBACCOUNTCONNECTIONSTRING%",
+      "connectionStringSetting": "COSMOSDBACCOUNTCONNECTIONSTRING",
       "direction": "out"
   }
   ]
