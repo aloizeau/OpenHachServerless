@@ -21,7 +21,7 @@
       "databaseName": "TestRatings",
       "collectionName": "Ratings",
       "createIfNotExists": true,
-      "connectionStringSetting": "COSMOSDBACCOUNTCONNECTIONSTRING",
+      "connectionStringSetting": "%COSMOSDBACCOUNTCONNECTIONSTRING%",
       "direction": "out"
   }
   ]
