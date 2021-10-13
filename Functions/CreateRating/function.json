@@ -16,13 +16,13 @@
       "name": "res"
     },
     {
-      "name": "outputDocument",
       "type": "cosmosDB",
+      "direction": "out",
+      "name": "outputDocument",
       "databaseName": "ratings",
       "collectionName": "ratings",
       "createIfNotExists": true,
-      "connectionStringSetting": "COSMOSDBACCOUNTCONNECTIONSTRING",
-      "direction": "out"
-  }
+      "connectionStringSetting": "COSMOSDBACCOUNTCONNECTIONSTRING"
+    }
   ]
 }
