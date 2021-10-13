@@ -23,6 +23,5 @@
       "sqlQuery": "SELECT * from c where c.userId = {userId}",
       "connectionStringSetting": "COSMOSDBACCOUNTCONNECTIONSTRING"
     }
-  ],
-  "scriptFile": "../dist/GetRatings/index.js"
+  ]
 }
