@@ -1,0 +1,29 @@
+{
+  "bindings": [
+    {
+      "authLevel": "anonymous",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "get",
+        "post"
+      ]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "name": "inputDocument",
+      "type": "cosmosDB",
+      "direction": "in",
+      "databaseName": "ratings",
+      "collectionName": "ratings",
+      "sqlQuery": "SELECT * from c where c.userId = {userId}",
+      "connectionStringSetting": "COSMOSDBACCOUNTCONNECTIONSTRING"
+    }
+  ],
+  "scriptFile": "../dist/GetRatings/index.js"
+}
