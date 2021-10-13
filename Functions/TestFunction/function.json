@@ -22,7 +22,7 @@
         "databaseName": "ratings",
         "collectionName": "ratings",
         "sqlQuery": "SELECT * from c where c.id = {id}",
-        "connectionStringSetting": "COSMOSDBACCOUNTCONNECTIONSTRING"
+        "connectionStringSetting": "openhackserverlesschallenge3we_DOCUMENTDB"
       }
     ]
   }
