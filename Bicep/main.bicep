@@ -18,7 +18,7 @@ var aspSku = 'Y1'
 var funcNodeVersion = '~14'
 var funcRuntime = 'node'
 var corsallowedOrigins = [
-  'https://softserverless-rating.trafficmanager.net/'
+  'https://softserverless-rating.trafficmanager.net'
 ]
 
 
