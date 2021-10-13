@@ -17,6 +17,9 @@ var cosmosContainerName = 'ratings'
 var aspSku = 'Y1'
 var funcNodeVersion = '~14'
 var funcRuntime = 'node'
+var corsallowedOrigins = [
+  'https://softserverless-rating.trafficmanager.net/'
+]
 
 
 module appIns 'modules/appinsight.bicep' = {
@@ -70,6 +73,7 @@ module func 'modules/function.bicep' = {
     functionAppName: funcName
     location: location
     planName: asp.outputs.id
+    corsallowedOrigins: corsallowedOrigins
   }
 }
 
