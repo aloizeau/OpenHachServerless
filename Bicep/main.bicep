@@ -1,280 +1,122 @@
 param location string = resourceGroup().location
-param functionRuntime string = 'node'
 
-param appNamePrefix string = uniqueString(resourceGroup().id)
-// param workspaceResourceId string
+//param appNamePrefix string = 'oh${uniqueString(resourceGroup().id)}'
+param appNamePrefix string = 'ohratingteam3'
 
-var functionAppName = '${appNamePrefix}-functionapp'
-var appServiceName = '${appNamePrefix}-appservice'
-var logicName = '${appNamePrefix}-logicapp'
-// var appInsightsName = '${appNamePrefix}-appinsights'
 
-// remove dashes for storage account name
-var storageAccountName = format('{0}sta', replace(appNamePrefix, '-', ''))
+var appInsightName = '${appNamePrefix}-appinsight'
+var aspName = '${appNamePrefix}-asp'
+var funcName = '${appNamePrefix}-func'
+var stoName = '${appNamePrefix}sto'
+var keyVaultName = '${appNamePrefix}-kv'
+var cosmosAccountName = '${appNamePrefix}-cdb'
 
-var appTags = {
-  AppID: 'OpenHack'
-  AppName: functionAppName
-  Runtime: functionRuntime
-}
+var cosmosDbName = 'ratings'
+var cosmosContainerName = 'ratings'
 
-// Storage Account
-resource storageAccount 'Microsoft.Storage/storageAccounts@2019-06-01' = {
-  name: storageAccountName
-  location: location
-  sku: {
-    name: 'Standard_LRS'
-  }
-  kind: 'StorageV2'
-  properties: {
-    supportsHttpsTrafficOnly: true
-    encryption: {
-      services: {
-        file: {
-          keyType: 'Account'
-          enabled: true
-        }
-        blob: {
-          keyType: 'Account'
-          enabled: true
-        }
-      }
-      keySource: 'Microsoft.Storage'
-    }
-    accessTier: 'Hot'
-  }
-  tags: appTags
-}
+var aspSku = 'Y1'
+var funcNodeVersion = '~14'
+var funcRuntime = 'node'
 
-// Blob Services for Storage Account
-resource blobServices 'Microsoft.Storage/storageAccounts/blobServices@2019-06-01' = {
-  parent: storageAccount
 
-  name: 'default'
-  properties: {
-    cors: {
-      corsRules: []
-    }
-    deleteRetentionPolicy: {
-      enabled: true
-      days: 7
-    }
+module appIns 'modules/appinsight.bicep' = {
+  name: appInsightName
+  params: {
+    name: appInsightName
+    location: location
   }
 }
 
-// // App Insights resource
-// resource appInsights 'Microsoft.Insights/components@2020-02-02-preview' = {
-//   name: appInsightsName
-//   location: location
-//   kind: 'web'
-//   properties: {
-//     Application_Type: 'web'
-//     WorkspaceResourceId: workspaceResourceId
-//     publicNetworkAccessForIngestion: 'Enabled'
-//     publicNetworkAccessForQuery: 'Enabled'
-//   }
-//   tags: appTags
-// }
-
-// App Service
-resource appService 'Microsoft.Web/serverFarms@2020-06-01' = {
-  name: appServiceName
-  location: location
-  kind: 'functionapp'
-  sku: {
-    name: 'Y1'
-    tier: 'Dynamic'
-    size: 'Y1'
-    family: 'Y'
-    capacity: 0
-  }
-  properties: {
-    perSiteScaling: false
-    maximumElasticWorkerCount: 1
-    isSpot: false
-    reserved: false
-    isXenon: false
-    hyperV: false
-    targetWorkerCount: 0
-    targetWorkerSizeId: 0
-  }
-  tags: appTags
-}
-
-// Function App
-resource functionApp 'Microsoft.Web/sites@2020-06-01' = {
-  name: functionAppName
-  location: location
-  kind: 'functionapp'
-  properties: {
-    enabled: true
-    hostNameSslStates: [
-      {
-        name: '${functionAppName}.azurewebsites.net'
-        sslState: 'Disabled'
-        hostType: 'Standard'
-      }
-      {
-        name: '${functionAppName}.scm.azurewebsites.net'
-        sslState: 'Disabled'
-        hostType: 'Standard'
-      }
-    ]
-    serverFarmId: appService.id
-    reserved: false
-    isXenon: false
-    hyperV: false
-    siteConfig: {
-      appSettings: [
-        {
-          name: 'AzureWebJobsStorage'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
-        }
-        {
-          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${storageAccount.listKeys().keys[0].value}'
-        }
-        // {
-        //   name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-        //   value: appInsights.properties.InstrumentationKey
-        // }
-        // {
-        //   name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
-        //   value: 'InstrumentationKey=${appInsights.properties.InstrumentationKey}'
-        // }
-        {
-          name: 'FUNCTIONS_WORKER_RUNTIME'
-          value: functionRuntime
-        }
-        {
-          name: 'FUNCTIONS_EXTENSION_VERSION'
-          value: '~3'
-        }
-        {
-          name: 'WEBSITE_NODE_DEFAULT_VERSION'
-          value: '~14'
-        }
-      ]
-    }
-    scmSiteAlsoStopped: false
-    clientAffinityEnabled: false
-    clientCertEnabled: false
-    hostNamesDisabled: false
-    dailyMemoryTimeQuota: 0
-    httpsOnly: true
-    redundancyMode: 'None'
-  }
-  tags: appTags
-}
-
-// Function App Config
-resource functionAppConfig 'Microsoft.Web/sites/config@2020-06-01' = {
-  parent: functionApp
-
-  name: 'web'
-  properties: {
-    numberOfWorkers: -1
-    defaultDocuments: [
-      'Default.htm'
-      'Default.html'
-      'Default.asp'
-      'index.htm'
-      'index.html'
-      'iisstart.htm'
-      'default.aspx'
-      'index.php'
-      'hostingstart.html'
-    ]
-    netFrameworkVersion: 'v4.0'
-    phpVersion: '5.6'
-    requestTracingEnabled: false
-    remoteDebuggingEnabled: false
-    httpLoggingEnabled: false
-    logsDirectorySizeLimit: 35
-    detailedErrorLoggingEnabled: false
-    publishingUsername: '$${functionAppName}'
-    scmType: 'None'
-    use32BitWorkerProcess: true
-    webSocketsEnabled: false
-    alwaysOn: false
-    managedPipelineMode: 'Integrated'
-    virtualApplications: [
-      {
-        virtualPath: '/'
-        physicalPath: 'site\\wwwroot'
-        preloadEnabled: true
-      }
-    ]
-    loadBalancing: 'LeastRequests'
-    experiments: {
-      rampUpRules: []
-    }
-    autoHealEnabled: false
-    cors: {
-      allowedOrigins: [
-        'https://functions.azure.com'
-        'https://functions-staging.azure.com'
-        'https://functions-next.azure.com'
-      ]
-      supportCredentials: false
-    }
-    localMySqlEnabled: false
-    ipSecurityRestrictions: [
-      {
-        ipAddress: 'Any'
-        action: 'Allow'
-        priority: 1
-        name: 'Allow all'
-        description: 'Allow all access'
-      }
-    ]
-    scmIpSecurityRestrictions: [
-      {
-        ipAddress: 'Any'
-        action: 'Allow'
-        priority: 1
-        name: 'Allow all'
-        description: 'Allow all access'
-      }
-    ]
-    scmIpSecurityRestrictionsUseMain: false
-    http20Enabled: true
-    minTlsVersion: '1.2'
-    ftpsState: 'AllAllowed'
-    preWarmedInstanceCount: 0
+module sto 'modules/storage.bicep' = {
+  name: stoName
+  params: {
+    name: stoName
+    location: location
+    sku: 'Standard_LRS'
   }
 }
 
-// Function App Binding
-resource functionAppBinding 'Microsoft.Web/sites/hostNameBindings@2020-06-01' = {
-  parent: functionApp
-
-  name: '${functionApp.name}.azurewebsites.net'
-  properties: {
-    siteName: functionApp.name
-    hostNameType: 'Verified'
+module kv 'modules/keyvault.bicep' = {
+  name: keyVaultName
+  params: {
+    name: keyVaultName
+    sku: 'standard'
   }
 }
 
-resource logic_app_example 'Microsoft.Logic/workflows@2019-05-01' = {
-  name: logicName
-  location: resourceGroup().location
-  properties: {
-    definition: {
-      '$schema': 'https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#'
-      actions: {}
-      contentVersion: '1.0.0.0'
-      outputs: {}
-      parameters: {}
-      triggers: {
-        'manual': {
-          inputs: {}
-          kind: 'Http'
-          type: 'Request'
-        }
-      }
-    }
-    parameters: {}
+module asp 'modules/appserviceplan.bicep' = {
+  name: aspName
+  params: {
+    name: aspName
+    location: location
+    sku: aspSku
   }
-  tags: appTags
+}
+
+resource storageSecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
+  name: '${keyVaultName}/storageConnectionString'
+  properties: {
+    value: sto.outputs.storageAccountConnectionString
+  }
+  dependsOn: [
+    kv
+  ]
+}
+
+
+module func 'modules/function.bicep' = {
+  name: funcName
+  params: {
+    functionAppName: funcName
+    location: location
+    planName: asp.outputs.id
+  }
+}
+
+
+module storageRoleAssignement 'modules/storageAccountBlobDataOwnerUserRoleAssignment.bicep' = {
+  name: 'storageRoleAssignement'
+  params: {
+    storageAccountName: sto.outputs.storageAccountName
+    functionAppName: func.outputs.prodFunctionAppName
+  }
+}
+
+module keyVaultRoleAssignement 'modules/keyVaultSecretUserRoleAssignment.bicep' = {
+  name: 'keyVaultRoleAssignement'
+  params: {
+    keyVaultName: kv.outputs.keyVaultName
+    functionAppName: func.outputs.prodFunctionAppName
+  }
+}
+
+module cosmosDb 'modules/cosmosdb.bicep' = {
+  name: cosmosAccountName
+  params: {
+    accountName: cosmosAccountName
+    dbName: cosmosDbName
+    containerName: cosmosContainerName
+  }
+}
+
+resource cosmosDbSecret 'Microsoft.KeyVault/vaults/secrets@2019-09-01' = {
+  name: '${keyVaultName}/cosmosDbConnectionString'
+  properties: {
+    value: cosmosDb.outputs.cosmosDbConnectionString
+  }
+  dependsOn: [
+    kv
+  ]
+}
+
+module funcAppSettings 'modules/functionAppSettings.bicep' = {
+  name: '${funcName}-funcAppSettings'
+  params: {
+    functionAppName: func.outputs.prodFunctionAppName
+    nodejsversion: funcNodeVersion
+    runtime: funcRuntime
+    storageAccountConnectionString: '@Microsoft.KeyVault(SecretUri=${storageSecret.properties.secretUri}/)'
+    cosmosDbAccountConnectionString: '@Microsoft.KeyVault(SecretUri=${cosmosDbSecret.properties.secretUri}/)'
+    appInsightsKey: appIns.outputs.appInsightsKey
+  }
 }
