@@ -1,0 +1,28 @@
+{
+  "bindings": [
+    {
+      "authLevel": "function",
+      "type": "httpTrigger",
+      "direction": "in",
+      "name": "req",
+      "methods": [
+        "get",
+        "post"
+      ]
+    },
+    {
+      "type": "http",
+      "direction": "out",
+      "name": "res"
+    },
+    {
+      "name": "outputDocument",
+      "type": "cosmosDB",
+      "databaseName": "TestRatings",
+      "collectionName": "Ratings",
+      "createIfNotExists": true,
+      "connectionStringSetting": "oh_CONNECTION",
+      "direction": "out"
+  }
+  ]
+}
