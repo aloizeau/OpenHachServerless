@@ -19,10 +19,10 @@
       "name": "inputDocument",
       "type": "cosmosDB",
       "direction": "in",
-      "databaseName": "TestRatings",
-      "collectionName": "Ratings",
+      "databaseName": "ratings",
+      "collectionName": "ratings",
       "sqlQuery": "SELECT * from c where c.id = {id}",
-      "connectionStringSetting": "ohratingteam3-func"
+      "connectionStringSetting": "COSMOSDBACCOUNTCONNECTIONSTRING"
     }
   ],
   "scriptFile": "../dist/GetRating/index.js"
