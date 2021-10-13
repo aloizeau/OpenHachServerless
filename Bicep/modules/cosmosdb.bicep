@@ -95,4 +95,4 @@ resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/container
 }
 
 
-output cosmosDbConnectionString string = 'AccountEndpoint=${cosmosDbAccount.properties.documentEndpoint};AccountKey=${listKeys(resourceId(resourceGroup().name, 'Microsoft.DocumentDb/databaseAccounts', accountName), '2021-06-15').primaryMasterKey}'
+output cosmosDbConnectionString string = 'AccountEndpoint=${cosmosDbAccount.properties.documentEndpoint};AccountKey=${listKeys(resourceId(resourceGroup().name, 'Microsoft.DocumentDb/databaseAccounts', accountName), '2021-06-15').primaryMasterKey};'
