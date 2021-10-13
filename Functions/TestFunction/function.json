@@ -14,6 +14,15 @@
         "type": "http",
         "direction": "out",
         "name": "res"
+      },
+      {
+        "name": "inputDocument",
+        "type": "cosmosDB",
+        "direction": "in",
+        "databaseName": "ratings",
+        "collectionName": "ratings",
+        "sqlQuery": "SELECT * from c where c.id = {id}",
+        "connectionStringSetting": "COSMOSDBACCOUNTCONNECTIONSTRING"
       }
     ]
   }
