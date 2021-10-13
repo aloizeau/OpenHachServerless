@@ -14,6 +14,17 @@
       "type": "http",
       "direction": "out",
       "name": "res"
-    }
+    },
+    {
+      "name": "outputDocument",
+      "type": "cosmosDB",
+      "databaseName": "ratings",
+      "collectionName": "ratings",
+      "createIfNotExists": true,
+      "connectionStringSetting": "COSMOSDBACCOUNTCONNECTIONSTRING",
+      "direction": "out",
+      "partitionKey": "id",
+      "collectionThroughput": "1000"
+  }
   ]
 }
