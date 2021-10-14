@@ -17,7 +17,13 @@ module.exports = async function (context, eventHubMessages) {
                 "storeLocation": message.header.locationId,
                 "receiptUrl": message.header.receiptUrl
             }
-            context.bindings.outputSbTopic.push(pub);
+            const msg = {
+                body: pub,
+                UserProperties: {
+                    totalCost: pub.totalCost
+                }
+            }
+            context.bindings.outputSbTopic.push(msg);
         }
     });
 
