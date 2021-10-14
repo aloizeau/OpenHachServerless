@@ -33,6 +33,7 @@ module.exports = async function (context, eventHubMessages) {
     });
 
     // context.done();
+    if(messages.length > 0) {
     const sbClient = new ServiceBusClient(connectionString);
     const sender = sbClient.createSender(topicName);
 	try {
@@ -44,9 +45,17 @@ module.exports = async function (context, eventHubMessages) {
 		let batch = await sender.createMessageBatch(); 
 		for (let i = 0; i < messages.length; i++) {
 			// for each message in the arry			
-
+            const msg = {
+                body: messages[i],  
+                applicationProperties:[
+                 {
+                     totalCost: messages[i]['totalCost']
+                 }
+                ],
+                contentType: "application/json"
+              };
 			// try to add the message to the batch
-			if (!batch.tryAddMessage(messages[i])) {			
+			if (!batch.tryAddMessage(msg)) {			
 				// if it fails to add the message to the current batch
 				// send the current batch as it is full
 				await sender.sendMessages(batch);
@@ -55,15 +64,7 @@ module.exports = async function (context, eventHubMessages) {
 				batch = await sender.createMessageBatch();
 
 				// now, add the message failed to be added to the previous batch to this batch
-				if (!batch.tryAddMessage({
-                      body: messages[i],  
-                      applicationProperties:[
-                       {
-                           totalCost: messages[i]['totalCost']
-                       }
-                      ],
-                      contentType: "application/json"
-                    })) {
+				if (!batch.tryAddMessage(msg)) {
 					// if it still can't be added to the batch, the message is probably too big to fit in a batch
 					throw new Error("Message too big to fit in a batch");
 				}
@@ -80,5 +81,6 @@ module.exports = async function (context, eventHubMessages) {
 	} finally {
 		await sbClient.close();
 	}
+}
 
 };
