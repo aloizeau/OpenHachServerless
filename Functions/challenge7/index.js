@@ -46,13 +46,7 @@ module.exports = async function (context, eventHubMessages) {
 		for (let i = 0; i < messages.length; i++) {
 			// for each message in the arry			
             const msg = {
-                body: messages[i],  
-                applicationProperties:[
-                 {
-                     totalCost: messages[i]['totalCost']
-                 }
-                ],
-                contentType: "application/json"
+                body: messages[i]
               };
 			// try to add the message to the batch
 			if (!batch.tryAddMessage(msg)) {			
