@@ -13,8 +13,7 @@ module.exports = async function (context, eventHubMessages) {
                 "storeLocation": message.header.locationId,
                 "receiptUrl": message.header.receiptUrl
             }
-            context.bindings.outputSbTopic.push(pub)
+            context.bindings.outputSbTopic = pub
         }
-        context.done()
     });
 };
