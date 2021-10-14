@@ -47,9 +47,9 @@ module.exports = async function (context, eventHubMessages) {
 			// for each message in the arry			
             const msg = {
                 body: messages[i],  
-                userProperties:
+                applicationProperties:
                  {
-                     "totalCost": messages[i]["totalCost"]
+                     totalCost: messages[i]["totalCost"]
                  },
                 contentType: "application/json"
               };
