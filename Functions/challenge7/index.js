@@ -4,7 +4,7 @@ module.exports = async function (context, eventHubMessages) {
     eventHubMessages.forEach((message, index) => {
         context.log(`Processed message ${message}`);
         context.bindings.outputDocument = {...message, id: message.header.salesNumber};
-        if(header.receiptUrl !== null) {
+        if(message.header.receiptUrl !== null) {
             const pub = {
                 "totalItems": message.details.length,
                 "totalCost": message.header.totalCost,
