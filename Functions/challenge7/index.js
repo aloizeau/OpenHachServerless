@@ -1,8 +1,12 @@
+const { ServiceBusClient } = require("@azure/service-bus");
+const connectionString = "Endpoint=sb://challenge8-team3.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=w86Q6Q1BdRjCoxYIeMib2pXvqkcIft4l0U7mGTi772g=";
+const topicName = "receipts";
+
 module.exports = async function (context, eventHubMessages) {
     context.log(`JavaScript eventhub trigger function called for message array ${eventHubMessages}`);
     
     context.bindings.outputDocument = [];
-    context.bindings.outputSbTopic = [];
+    const messages = [];
     
     eventHubMessages.forEach((message, index) => {
         context.log(`Processed message ${JSON.stringify(message)}`);
@@ -17,16 +21,64 @@ module.exports = async function (context, eventHubMessages) {
                 "storeLocation": message.header.locationId,
                 "receiptUrl": message.header.receiptUrl
             }
-            const msg = {
-                body: pub,
-                applicationProperties: [
-                    {totalCost: pub.totalCost}
-                ],
-                contentType: "application/json"
-            }
-            context.bindings.outputSbTopic.push(msg);
+            // const msg = {
+            //     body: pub,
+            //     applicationProperties: [
+            //         {totalCost: pub.totalCost}
+            //     ],
+            //     contentType: "application/json"
+            // }
+            messages.push(pub);
         }
     });
 
-    context.done();
+    // context.done();
+    const sbClient = new ServiceBusClient(connectionString);
+    const sender = sbClient.createSender(topicName);
+	try {
+		// Tries to send all messages in a single batch.
+		// Will fail if the messages cannot fit in a batch.
+		// await sender.sendMessages(messages);
+
+		// create a batch object
+		let batch = await sender.createMessageBatch(); 
+		for (let i = 0; i < messages.length; i++) {
+			// for each message in the arry			
+
+			// try to add the message to the batch
+			if (!batch.tryAddMessage(messages[i])) {			
+				// if it fails to add the message to the current batch
+				// send the current batch as it is full
+				await sender.sendMessages(batch);
+
+				// then, create a new batch 
+				batch = await sender.createMessageBatch();
+
+				// now, add the message failed to be added to the previous batch to this batch
+				if (!batch.tryAddMessage({
+                      body: messages[i],  
+                      applicationProperties:[
+                       {
+                           totalCost: messages[i]['totalCost']
+                       }
+                      ],
+                      contentType: "application/json"
+                    })) {
+					// if it still can't be added to the batch, the message is probably too big to fit in a batch
+					throw new Error("Message too big to fit in a batch");
+				}
+			}
+		}
+
+		// Send the last created batch of messages to the topic
+		await sender.sendMessages(batch);
+
+		console.log(`Sent a batch of messages to the topic: ${topicName}`);
+
+		// Close the sender
+		await sender.close();
+	} finally {
+		await sbClient.close();
+	}
+
 };
