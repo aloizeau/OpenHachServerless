@@ -19,9 +19,9 @@
       "connectionStringSetting": "COSMOSDBACCOUNTCONNECTIONSTRING"
     },
     {
-      "name": "outputSbQueue",
+      "name": "outputSbTopic",
       "type": "serviceBus",
-      "queueName": "testqueue",
+      "topicName": "receipts",
       "connection": "chalenge8_ServiceBusConnection",
       "direction": "out"
     }
