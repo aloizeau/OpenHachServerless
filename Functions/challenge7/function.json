@@ -17,6 +17,13 @@
       "collectionName": "sales",
       "createIfNotExists": true,
       "connectionStringSetting": "COSMOSDBACCOUNTCONNECTIONSTRING"
+    },
+    {
+      "name": "outputSbQueue",
+      "type": "serviceBus",
+      "queueName": "testqueue",
+      "connection": "chalenge8_ServiceBusConnection",
+      "direction": "out"
     }
   ]
 }
