@@ -19,7 +19,7 @@ module.exports = async function (context, eventHubMessages) {
             }
             const msg = {
                 body: pub,
-                UserProperties: {
+                applicationProperties: {
                     totalCost: pub.totalCost
                 }
             }
