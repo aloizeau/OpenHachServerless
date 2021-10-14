@@ -11,7 +11,7 @@ module.exports = async function (context, eventHubMessages) {
         if(message.header.receiptUrl !== null) {
             const pub = {
                 "totalItems": message.details.length,
-                "totalCost": message.header.totalCost,
+                "totalCost": parseFloat(message.header.totalCost),
                 "salesNumber": message.header.salesNumber,
                 "salesDate": message.header.dateTime,
                 "storeLocation": message.header.locationId,
