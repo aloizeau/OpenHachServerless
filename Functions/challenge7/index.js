@@ -1,8 +1,3 @@
-const { ServiceBusClient } = require("@azure/service-bus");
-
-const connectionString = process.env.SERVICEBUS_CONNECTION_STRING;
-const sbClient = new ServiceBusClient(connectionString);
-
 module.exports = async function (context, eventHubMessages) {
     context.log(`JavaScript eventhub trigger function called for message array ${eventHubMessages}`);
     
@@ -18,8 +13,8 @@ module.exports = async function (context, eventHubMessages) {
                 "storeLocation": message.header.locationId,
                 "receiptUrl": message.header.receiptUrl
             }
-            const sender = sbClient.createSender("receipts");
-            await sender.sendMessages(pub);
+            context.bindings.outputSbTopic.push(pub)
         }
+        context.done()
     });
 };

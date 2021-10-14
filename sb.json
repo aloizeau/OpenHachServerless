@@ -1,0 +1,101 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "metadata": {
+    "_generator": {
+      "name": "bicep",
+      "version": "0.4.613.9944",
+      "templateHash": "4263845790793884491"
+    }
+  },
+  "parameters": {
+    "name": {
+      "type": "string",
+      "defaultValue": "challenge8-team3"
+    },
+    "topicName": {
+      "type": "string",
+      "defaultValue": "receipts"
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    }
+  },
+  "functions": [],
+  "resources": [
+    {
+      "type": "Microsoft.ServiceBus/namespaces/topics/subscriptions/rules",
+      "apiVersion": "2021-06-01-preview",
+      "name": "[format('{0}/{1}/{2}/{3}', parameters('name'), parameters('topicName'), 'subge100', 'ge100')]",
+      "properties": {
+        "sqlFilter": {
+          "sqlExpression": "totalCost >= 100"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ServiceBus/namespaces', parameters('name'))]",
+        "[resourceId('Microsoft.ServiceBus/namespaces/topics/subscriptions', parameters('name'), parameters('topicName'), 'subge100')]",
+        "[resourceId('Microsoft.ServiceBus/namespaces/topics', parameters('name'), parameters('topicName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.ServiceBus/namespaces/topics/subscriptions/rules",
+      "apiVersion": "2021-06-01-preview",
+      "name": "[format('{0}/{1}/{2}/{3}', parameters('name'), parameters('topicName'), 'sublt100', 'lt100')]",
+      "properties": {
+        "sqlFilter": {
+          "sqlExpression": "totalCost < 100"
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ServiceBus/namespaces', parameters('name'))]",
+        "[resourceId('Microsoft.ServiceBus/namespaces/topics/subscriptions', parameters('name'), parameters('topicName'), 'sublt100')]",
+        "[resourceId('Microsoft.ServiceBus/namespaces/topics', parameters('name'), parameters('topicName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.ServiceBus/namespaces/topics/subscriptions",
+      "apiVersion": "2021-06-01-preview",
+      "name": "[format('{0}/{1}/{2}', parameters('name'), parameters('topicName'), 'subge100')]",
+      "properties": {},
+      "dependsOn": [
+        "[resourceId('Microsoft.ServiceBus/namespaces', parameters('name'))]",
+        "[resourceId('Microsoft.ServiceBus/namespaces/topics', parameters('name'), parameters('topicName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.ServiceBus/namespaces/topics/subscriptions",
+      "apiVersion": "2021-06-01-preview",
+      "name": "[format('{0}/{1}/{2}', parameters('name'), parameters('topicName'), 'sublt100')]",
+      "properties": {},
+      "dependsOn": [
+        "[resourceId('Microsoft.ServiceBus/namespaces', parameters('name'))]",
+        "[resourceId('Microsoft.ServiceBus/namespaces/topics', parameters('name'), parameters('topicName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.ServiceBus/namespaces/topics",
+      "apiVersion": "2021-06-01-preview",
+      "name": "[format('{0}/{1}', parameters('name'), parameters('topicName'))]",
+      "properties": {
+        "enableBatchedOperations": true
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.ServiceBus/namespaces', parameters('name'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.ServiceBus/namespaces",
+      "apiVersion": "2021-06-01-preview",
+      "name": "[parameters('name')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Premium"
+      },
+      "properties": {
+        "zoneRedundant": true
+      }
+    }
+  ]
+}
