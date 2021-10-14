@@ -18,7 +18,7 @@ module.exports = async function (context, eventHubMessages) {
                 "receiptUrl": message.header.receiptUrl
             }
             const msg = {
-                body: pub,
+                body: JSON.stringify(pub),
                 applicationProperties: {
                     totalCost: pub.totalCost
                 }
