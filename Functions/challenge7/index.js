@@ -18,10 +18,11 @@ module.exports = async function (context, eventHubMessages) {
                 "receiptUrl": message.header.receiptUrl
             }
             const msg = {
-                body: 'toto',
-                applicationProperties: {
-                    totalCost: pub.totalCost
-                }
+                body: pub,
+                applicationProperties: [
+                    {totalCost: pub.totalCost}
+                ],
+                contentType: "application/json"
             }
             context.bindings.outputSbTopic.push(msg);
         }
