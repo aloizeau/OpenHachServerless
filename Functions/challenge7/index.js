@@ -3,6 +3,7 @@ module.exports = async function (context, eventHubMessages) {
     
     context.bindings.outputDocument = [];
     const messages = [];
+    context.bindings.outputSbTopic = [];
     
     eventHubMessages.forEach((message, index) => {
         context.log(`Processed message ${JSON.stringify(message)}`);
