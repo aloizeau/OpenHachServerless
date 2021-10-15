@@ -17,6 +17,13 @@
       "collectionName": "sales",
       "createIfNotExists": true,
       "connectionStringSetting": "COSMOSDBACCOUNTCONNECTIONSTRING"
+    },
+    {
+      "name": "outputSbTopic",
+      "type": "serviceBus",
+      "topicName": "receipts",
+      "connection": "challenge8_ServiceBusConnection",
+      "direction": "out"
     }
   ]
 }
